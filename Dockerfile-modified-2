@@ -1,0 +1,17 @@
+FROM redis
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get -y update \
+  && apt-get -y install wget libssl-dev libreadline-dev libgdbm-dev build-essential zlib1g-dev
+ADD http://ftp.ruby-lang.org/pub/ruby/2.4/ruby-2.4.1.tar.gz /usr/src/ruby-folder/
+RUN tar -zxvf /usr/src/ruby-folder/ruby-2.4.1.tar.gz -C /usr/local
+WORKDIR /usr/local/ruby-2.4.1/
+#RUN make clean
+RUN ./configure \
+  && make \
+  && make install
+#RUN gem source -r https://rubygems.org/
+#RUN gem source -a https://rubygems.org/
+RUN gem install redis
+RUN wget -O /usr/local/bin/redis-trib http://download.redis.io/redis-stable/src/redis-trib.rb
+RUN chmod 755 /usr/local/bin/redis-trib
+CMD redis-server 
